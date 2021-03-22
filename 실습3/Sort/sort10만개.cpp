@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <random>
+
 using std::cout;
 using std::endl;
 
@@ -54,6 +55,9 @@ int main() {
 	checkSort(list);
 
 	cout << "정보통신공학과 12171850 정연한" << endl;
+
+	delete[] list;
+	delete[] temp;
 
 	return 0;
 }
