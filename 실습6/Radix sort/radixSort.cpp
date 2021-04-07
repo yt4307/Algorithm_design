@@ -2,18 +2,17 @@
 using std::cout;
 using std::endl;
 
-template <size_t N>
-void radixSort(int(&)[N], int, int);
+template <size_t N> // 리스트의 사이즈를 넘기기 위한 템플릿
+void radixSort(int(&)[N], int, int); // size를 받아오기 위해 pass by reference로 리스트를 넘긴다.
 
 template <size_t N>
 void checkSort(int(&)[N]);
 
 int main() {
 	int list[]{ 170, 45, 75, 90, 2, 24, 802, 66 };
-	
 
 	cout << "정렬 전 리스트" << endl;
-	for (auto iter : list)
+	for (auto iter : list) // 범위 기반 반복문으로 리스트의 요소 출력
 		cout << iter << ' ';
 	cout << endl;
 
@@ -43,9 +42,9 @@ void radixSort(int(&list)[N], int p, int k) {
 	int index{ }, pval{ };
 
 	// 메모리 할당
-	if ((counts = new int[k] { }) == NULL)
+	if ((counts = new int[k] { }) == nullptr)
 		return;
-	if ((temp = new int[N] { }) == NULL)
+	if ((temp = new int[N] { }) == nullptr)
 		return;
 	for (int n{ }; n < p; ++n) { // 1의 자리, 10의자리, 100의 자리 순으로 진행
 		for (int i{ }; i < k; ++i)
@@ -66,7 +65,6 @@ void radixSort(int(&list)[N], int p, int k) {
 		for (int i{ 1 }; i < k; ++i) {
 			counts[i] = counts[i] + counts[i - 1];
 		}
-
 		// 카운트를 사용해 각 항목의 위치를 결정한다.
 		// 계수정렬 방식
 		for (int j{ N - 1 }; j >= 0; --j) { // 뒤에서부터 시작
