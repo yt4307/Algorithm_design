@@ -1,3 +1,4 @@
+// 8코어 CPU를 기준으로 작성되었습니다.
 #include <iostream>
 #include <random>
 #include <chrono>
@@ -40,7 +41,7 @@ int main() {
 	GetSystemInfo(&info);
 	int numCore{ static_cast<int>(info.dwNumberOfProcessors) };
 
-	uniform_int_distribution<int> randInt{ 0, listSize };
+	uniform_int_distribution<int> randInt{ 0, listSize }; // 0 ~ listSize까지 균등 분포 정의
 	for (int i{ }; i < listSize; ++i) // 0부터 listSize - 1까지 반복하며,
 		list[i] = randInt(gen); // list에 랜덤한 정수값 삽입
 
@@ -59,6 +60,7 @@ int main() {
 		th.join();
 
 	// 정렬 된 8개의 조각을 하나로 합치는 과정
+	// 이 부분도 원래는 스레드로 해결해야 하나, 공유 변수의 데이터 레이스 문제를 해결하지 못해 밖으로 빼내었다.
 	Merge(0, listSize / 8 - 1, listSize / 4 - 1); // 0 ~ 1/4 지점 병함
 	Merge(listSize / 4, 3 * listSize / 8 - 1, listSize / 2 - 1); // 1/4 ~ 2/4(1/2) 지점 병합
 	Merge(listSize / 2, 5 * listSize / 8 - 1, 3 * listSize / 4 - 1); // 2/4 ~ 3/4 지점 병합
@@ -72,7 +74,8 @@ int main() {
 
 	auto execTime{ duration_cast<microseconds>(end - start) };
 
-	cout << "Multi-thread로 Merge sort를 나눠서 시행한 시간: " << execTime.count() << "μs" << endl;
+	cout << listSize << "개의 데이터를 Multi-thread를 사용해\nMerge sort를 "
+		<< numCore << "조각으로 나눠서 시행한 시간: " << execTime.count() << "μs" << endl;
 	
 	// 정렬 결과 출력
 	CheckSort(const_cast<const int*&>(list));
