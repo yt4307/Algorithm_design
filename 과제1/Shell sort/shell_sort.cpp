@@ -21,7 +21,7 @@ random_device rd{ };
 mt19937 gen{ rd() };
 
 int main() {
-	const int listSize{ 1'000'000 };
+	const int listSize{ 100'000'000 };
 	int* list{ new int[listSize] { } };
 
 	uniform_int_distribution<int> randInt{ 0, listSize };
@@ -30,16 +30,17 @@ int main() {
 
 	// 셸 정렬 수행
 	auto start{ system_clock::now() };
-	ShellSort(list);
+	ShellSort((&list)[0]);
 	auto end{ system_clock::now() };
 
 	auto execTime{ duration_cast<microseconds>(end - start) };
 	cout << listSize << "개 정렬: " << execTime.count() << "μs" << endl;
 
 	// 정렬 결과 출력
-	CheckSort(const_cast<const int*&>(list));
+	CheckSort(const_cast<const int*&>((&list)[0]));
 
 	cout << "\n정보통신공학과 12171850 정연한" << endl;
+
 	delete[] list;
 	return 0;
 }

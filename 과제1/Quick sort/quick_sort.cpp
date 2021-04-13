@@ -13,7 +13,7 @@ using std::chrono::duration_cast;
 using std::chrono::system_clock;
 using std::chrono::microseconds;
 
-void quickSort(int*&, int, int);
+void QuickSort(int*&, int, int);
 
 void CheckSort(const int*&);
 
@@ -31,15 +31,16 @@ int main() {
 
 	// 1억개 정렬
 	auto start{ system_clock::now() }; // 시작 시간
-	QuickSort(list, 0, listSize - 1); // 시간을 측정할 함수 실행
+	QuickSort((&list)[0], 0, listSize - 1); // 시간을 측정할 함수 실행
 	auto end{ system_clock::now() }; // 종료 시간
 
 	auto execTime{ duration_cast<microseconds>(end - start) }; // 끝난 시간에서 시작한 시간을 빼어 실행된 시간 계산
-	cout << listSize << "개 정렬: " << execTime.count() << "μs" << endl;
+	cout << listSize << "개 퀵 정렬: " << execTime.count() << "μs" << endl;
 
-	CheckSort(const_cast<const int*&>(list));
+	CheckSort(const_cast<const int*&>((&list)[0]));
 
 	cout << "\n정보통신공학과 12171850 정연한" << endl;
+
 	delete[] list;
 	return 0;
 }
