@@ -39,7 +39,7 @@ int main() {
 
 	// 끝난 시간에서 시작한 시간을 빼어 총 수행 시간 계산
 	auto execTime{ duration_cast<microseconds>(end - start) };
-	cout << listSize << "개 정렬: " << execTime.count() << "μs" << endl;
+	cout << listSize << "개 셸 정렬: " << execTime.count() << "μs" << endl;
 
 	// 정렬 결과 출력
 	CheckSort(const_cast<const int*&>((&list)[0]));

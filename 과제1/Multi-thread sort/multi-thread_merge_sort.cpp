@@ -40,7 +40,6 @@ constexpr int listSize{ 100'000'000 };
 int* list{ new int[listSize] {} };
 int border{ }; // 리스트 내의 경계선
 
-
 int main() {
 	SYSTEM_INFO info{ }; // 시스템 정보를 저장할 객체 선언
 	GetSystemInfo(&info); // 시스템 정보를 가져와 info 변수에 넣어준다.
@@ -96,7 +95,7 @@ int main() {
 	return 0;
 }
 
-// 분할 된 부분배열을 합병하는 함수
+// 분할 된 부분배열을 병합하는 함수
 void Merge(int low, int mid, int high) {
 	// 정렬을 위해 임시 배열 두개 선언
 	int* left{ new int[mid - low + 1] {} };
@@ -139,7 +138,7 @@ void Merge(int low, int mid, int high) {
 	delete[] right;
 }
 
-// 제자리 합병 정렬
+// 제자리 병합 정렬
 void MergeSort(int low, int high) {
 	// 기본 조건
 	if (low >= high)

@@ -22,7 +22,7 @@ random_device rd{ };
 mt19937 gen{ rd() };
 
 int main() {
-	constexpr int listSize{ 100'000'0 }; // 정렬을 위해 상수값으로 초기화 된 listSize 상수 선언
+	constexpr int listSize{ 100'000'000 }; // 정렬을 위해 상수값으로 초기화 된 listSize 상수 선언
 	int* list{ new int[listSize] { } }; // 아래에서 값을 넣기 위해 일단은 0으로 초기화
 
 	uniform_int_distribution<int> randInt{ 0, listSize }; // 0 ~ listSize까지 균등 분포 정의
@@ -59,8 +59,8 @@ inline void Swap(int& a, int& b) {
 }
 
 // 퀵 정렬은 피벗을 기준으로 양쪽의 요소를 최대한 동등하게 나누어야 최선의 속도를 보인다.
-// 그러나 그렇다고 해서 배열을 처음부터 끝까지 순회하면서 정확히 중간값을 찾는건 너무 시간이 오래걸린다.
-// 따라서 임의의 3개의 값을 골라 그 중 중간값에 해당하는 값을 피벗값으로 골라준다.
+// 그러나 그렇다고 해서 배열을 처음부터 끝까지 순회하면서 정확히 중간 값을 찾는건 너무 시간이 오래걸린다.
+// 따라서 임의의 3개의 값을 골라 그 중 중간 값에 해당하는 값을 피벗 값으로 골라준다.
 void QuickSort(int*& list, int low, int high) {
 	// 기본 조건
 	if (low >= high)
@@ -79,14 +79,14 @@ void QuickSort(int*& list, int low, int high) {
 
 		// 예를 들어 num[0] > num[1] 이고, num[0] < num[2] 이면,
 		// num[0]이 num[1]보단 크고 num[2]보단 작다. 따라서 중간 값은 num[0]
-	}() }; // 여러 곳에서 재사용하지 않을 함수이기에 람다식으로 작성하였다.
+	}() }; // 여러 곳에서 재사용하지는 않을 함수이기에 람다식으로 작성하였다.
 
 	// 위에서 찾은 mid 인덱스를 피벗 값으로 사용하기 위해 리스트의 두 인덱스 값을 서로 바꿔준다.
 	Swap(list[mid], list[high]);
 
 	int& pivot{ list[high] }; // 위에서 찾은 알고리즘으로 피벗 값 설정
 	int target{ low - 1 }; // 현재 정렬중인 인덱스
-	for (int i{ low }; i < high; ++i) // i는 low 부터 high - 1(피봇 - 1)까지 순회하면서
+	for (int i{ low }; i < high; ++i) // i는 low 부터 high - 1(피벗 - 1)까지 순회하면서
 		if (list[i] < pivot) // 리스트의 i 인덱스 값이 피벗 값보다 작다면,
 
 			// 리스트의 현재 요소 인덱스를 1 증가시키고, 리스트의 i 인덱스와 서로 값을 바꿔준다.
