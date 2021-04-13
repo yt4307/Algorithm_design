@@ -22,19 +22,24 @@ random_device rd{ };
 mt19937 gen{ rd() };
 
 int main() {
-	constexpr int listSize{ 100'000'000 }; // 1억개 정렬을 위해 상수값 100,000,000으로 초기화 된 listSize 선언
+	constexpr int listSize{ 100'000'0 }; // 정렬을 위해 상수값으로 초기화 된 listSize 상수 선언
 	int* list{ new int[listSize] { } }; // 아래에서 값을 넣기 위해 일단은 0으로 초기화
 
 	uniform_int_distribution<int> randInt{ 0, listSize }; // 0 ~ listSize까지 균등 분포 정의
 	for (int i{ }; i < listSize; ++i) // 0부터 listSize - 1까지 반복하며,
 		list[i] = randInt(gen); // list에 랜덤한 정수값 삽입
 
-	// 1억개 정렬
-	auto start{ system_clock::now() }; // 시작 시간
-	QuickSort((&list)[0], 0, listSize - 1); // 시간을 측정할 함수 실행
-	auto end{ system_clock::now() }; // 종료 시간
+	// 수행 시간 측정 시작
+	auto start{ system_clock::now() };
 
-	auto execTime{ duration_cast<microseconds>(end - start) }; // 끝난 시간에서 시작한 시간을 빼어 실행된 시간 계산
+	// 퀵 정렬 수행
+	QuickSort((&list)[0], 0, listSize - 1);
+
+	// 수행 시간 측정 종료
+	auto end{ system_clock::now() };
+
+	// 끝난 시간에서 시작한 시간을 빼어 총 수행 시간 계산
+	auto execTime{ duration_cast<microseconds>(end - start) };
 	cout << listSize << "개 퀵 정렬: " << execTime.count() << "μs" << endl;
 
 	CheckSort(const_cast<const int*&>((&list)[0]));
@@ -53,35 +58,48 @@ inline void Swap(int& a, int& b) {
 	b = temp;
 }
 
+// 퀵 정렬은 피벗을 기준으로 양쪽의 요소를 최대한 동등하게 나누어야 최선의 속도를 보인다.
+// 그러나 그렇다고 해서 배열을 처음부터 끝까지 순회하면서 정확히 중간값을 찾는건 너무 시간이 오래걸린다.
+// 따라서 임의의 3개의 값을 골라 그 중 중간값에 해당하는 값을 피벗값으로 골라준다.
 void QuickSort(int*& list, int low, int high) {
-	if (high - low > 1) { // high값이 low보다 클 때,
-		int mid{ (low + high) / 2 }; // mid는 low, high 두 인덱스를 합한 것의 절반 값으로 선언
+	// 기본 조건
+	if (low >= high)
+		return;
 
-		// low, mid, high 3개의 인덱스 값을 골라 그 중간 값으로 pivot을 설정하기 위한 알고리즘
-		if (list[low] > list[mid]) // 리스트의 low인덱스 값이 리스트의 mid인덱스 값보다 크다면,
-			Swap(list[low], list[mid]); // 두 값을 서로 바꿔준다.
-		if (list[low] > list[high]) // 리스트의 low인덱스 값이 리스트의 high인덱스 값보다 크다면,
-			Swap(list[low], list[high]);// 두 값을 서로 바꿔준다.
-		if (list[mid] > list[high]) // 리스트의 mid인덱스 값이 리스트의 high인덱스 값보다 크다면,
-			Swap(list[mid], list[high]); // 두 값을 서로 바꿔준다.
-		Swap(list[mid], list[high - 1]); // 두 값을 서로 바꿔주며, 최종적으로 high - 1이 중간 값(pivot에 들어갈 값)으로 선정
+	// 피벗 값을 구하기 위해 중간 값 설정
+	int mid{ [=] () -> auto {
+		uniform_int_distribution<int> list_random_value{low, high}; // low ~ high 까지 균등 분포 정의
 
-		int& pivot{ list[high - 1] }; // 위의 알고리즘을 거쳐서 나온 리스트의 high - 1인덱스 값을 pivot으로 설정 
-		int current{ low }; // low인덱스 값으로 current 값을 설정
-		for (int i{ high - 1 };;) { // i는 high - 1로 선언
-			while (list[++current] < pivot); // 리스트의 current + 1인덱스 값이 pivot보다 작다면 반복
-			while (list[--i] > pivot); // 리스트의 i - 1인덱스 값이 pivot 보다 크다면 반복
-			if (current >= i) // 만약 current인덱스 값이 i인덱스보다 크거나 같다면,
-				break; // 해당 반복문을 종료한다.
-			Swap(list[current], list[i]); // 위의 조건에 걸리지 않았다면 두 값을 서로 바꿔준다.
-		}
-		Swap(list[current], list[high - 1]); // 위의 조건에 의해 반복문을 빠져나왔다면 두 값을 서로 바꿔준다.
+		// 임의의 3개의 값을 고르기 위해 크기가 3인 배열 선언과 동시에 랜덤 값으로 초기화
+		int num[3]{ list_random_value(gen), list_random_value(gen), list_random_value(gen) };
 
-		QuickSort(list, low, current - 1);
-		QuickSort(list, current + 1, high);
-	}
-	else if (list[low] > list[high]) // 리스트의 low인덱스 값이 리스트의 high인덱스 값보다 클 때,
-		Swap(list[low], list[high]); // 두 값을 서로 바꿔준다.
+		return (num[0] > num[1]) // num[0] > num[1]가 참이면 콜론 앞 항으로, 거짓이면 콜론 뒷 항으로
+			? ((num[0] > num[2]) ? ((num[1] > num[2]) ? num[1] : num[2]) : num[0])  // 앞 항
+			: ((num[1] > num[2]) ? ((num[0] > num[2]) ? num[0] : num[2]) : num[1]); // 뒷 항
+
+		// 예를 들어 num[0] > num[1] 이고, num[0] < num[2] 이면,
+		// num[0]이 num[1]보단 크고 num[2]보단 작다. 따라서 중간 값은 num[0]
+	}() }; // 여러 곳에서 재사용하지 않을 함수이기에 람다식으로 작성하였다.
+
+	// 위에서 찾은 mid 인덱스를 피벗 값으로 사용하기 위해 리스트의 두 인덱스 값을 서로 바꿔준다.
+	Swap(list[mid], list[high]);
+
+	int& pivot{ list[high] }; // 위에서 찾은 알고리즘으로 피벗 값 설정
+	int target{ low - 1 }; // 현재 정렬중인 인덱스
+	for (int i{ low }; i < high; ++i) // i는 low 부터 high - 1(피봇 - 1)까지 순회하면서
+		if (list[i] < pivot) // 리스트의 i 인덱스 값이 피벗 값보다 작다면,
+
+			// 리스트의 현재 요소 인덱스를 1 증가시키고, 리스트의 i 인덱스와 서로 값을 바꿔준다.
+			Swap(list[++target], list[i]);
+
+	// 모든 반복이 끝나면 리스트의 현재 요소 인덱스를 1 증가시키고, 피벗 값과 서로 값을 바꿔준다.
+	Swap(list[++target], pivot);
+
+	// 앞쪽 절반 정복
+	QuickSort(list, low, target - 1);
+
+	// 뒤쪽 절반 정복
+	QuickSort(list, target + 1, high);
 }
 
 void CheckSort(const int*& list) {

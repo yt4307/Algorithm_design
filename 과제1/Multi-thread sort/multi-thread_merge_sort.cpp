@@ -81,6 +81,7 @@ int main() {
 	// 혹시 모를 오작동을 방지하기 위해 스레드 벡터를 비워준다.
 	threads.clear();
 
+	// 끝난 시간에서 시작한 시간을 빼어 총 수행 시간 계산
 	auto execTime{ duration_cast<microseconds>(end - start) };
 
 	cout << listSize << "개의 데이터를 Multi-thread를 사용해\nMerge sort를 "
@@ -140,17 +141,17 @@ void Merge(int low, int mid, int high) {
 
 // 제자리 합병 정렬
 void MergeSort(int low, int high) {
-	// 리스트의 중간 지점 선언
-	int mid{ low + ((high - low) / 2) };
-
 	// 기본 조건
 	if (low >= high)
 		return;
 
+	// 분할을 위해 리스트의 중간 지점 선언
+	int mid{ low + ((high - low) / 2) };
+
 	// 앞쪽 절반 정복
 	MergeSort(low, mid);
 
-	// 뒷쪽 절반 정복
+	// 뒤쪽 절반 정복
 	MergeSort(mid + 1, high);
 
 	// 정복시킬 두 반쪽을 병합

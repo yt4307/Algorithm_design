@@ -21,18 +21,23 @@ random_device rd{ };
 mt19937 gen{ rd() };
 
 int main() {
-	const int listSize{ 100'000'000 };
-	int* list{ new int[listSize] { } };
+	const int listSize{ 100'000'000 }; // 정렬을 위해 상수값으로 초기화 된 listSize 상수 선언
+	int* list{ new int[listSize] { } }; // 아래에서 값을 넣기 위해 일단은 0으로 초기화
 
-	uniform_int_distribution<int> randInt{ 0, listSize };
-	for (int i{ }; i < listSize; ++i)
-		list[i] = randInt(gen);
+	uniform_int_distribution<int> randInt{ 0, listSize }; // 0 ~ listSize까지 균등 분포 정의
+	for (int i{ }; i < listSize; ++i) // 0부터 listSize - 1까지 반복하며,
+		list[i] = randInt(gen); // list에 랜덤한 정수값 삽입
+	
+	// 수행 시간 측정 시작
+	auto start{ system_clock::now() };
 
 	// 셸 정렬 수행
-	auto start{ system_clock::now() };
 	ShellSort((&list)[0]);
+	
+	// 수행 시간 측정 종료
 	auto end{ system_clock::now() };
 
+	// 끝난 시간에서 시작한 시간을 빼어 총 수행 시간 계산
 	auto execTime{ duration_cast<microseconds>(end - start) };
 	cout << listSize << "개 정렬: " << execTime.count() << "μs" << endl;
 
@@ -72,15 +77,15 @@ void ShellSort(int*& list) {
 	while (gapIndex >= 0) { // gap이 1이 될 때까지 반복
 		step = gap[gapIndex--];	// 현재 gap(step)
 		
-		// 각 부분 리스트의 두 번째 원소의 인덱스 부터 순회한다.
-		// 예를 들어 step이 3일 때 arr[0], arr[1], arr[2]는 이전 원소와 비교할 것이 없다.
-		// 따라서 step부터 순회한다.
+		// 각 부분 리스트의 두 번째 요소의 인덱스 부터 순회한다.
+		// 예를 들어 step이 3일 때 arr[0], arr[1], arr[2]는 이전 요소와 비교할 것이 없다.
+		// 따라서 step부터 순회
 		for (int i{ step }; i < length; ++i)
 
-			// j는 target 원소가 되며 현재 원소(target) a[j]가 이전 원소 a[j - step]보다 작을 때 까지 반복한다.
+			// j는 target 요소가 되며, 현재 요소 a[j]가 이전 요소 a[j - step]보다 작을 때 까지 반복한다.
 			for (int j = i; j >= step && list[j] < list[j - step]; j -= step)
 
-				//현재(target) 원소의 인덱스(j)와 이전의 원소(j-step)의 인덱스에 있는 원소의 값을 교환한다.
+				// 리스트의 현재 요소 인덱스(j)와 이전 요소(j-step) 인덱스의 값을 교환한다.
 				Swap(list[j], list[j - step]);
 	}
 }
